@@ -9,8 +9,8 @@ export default function Navigation() {
 
   const navItems = [
     { href: "/", label: "홈", icon: Music },
-    { href: "/favorites", label: "즐겨찾기", icon: Heart },
-    { href: "/submit", label: "제안하기", icon: Plus },
+    // { href: "/favorites", label: "즐겨찾기", icon: Heart },
+    // { href: "/submit", label: "제안하기", icon: Plus },
   ];
 
   return (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { KaraokeInfo } from "@/types";
 
 export async function GET() {
   try {
@@ -9,6 +10,7 @@ export async function GET() {
           select: {
             id: true,
             title: true,
+            titleKr: true,
           },
         },
         karaokeInfo: {
@@ -49,7 +51,7 @@ export async function POST(req: Request) {
         artist,
         seriesId,
         karaokeInfo: {
-          create: karaokeInfo.map((info: any) => ({
+          create: karaokeInfo.map((info: KaraokeInfo) => ({
             provider: info.provider,
             country: info.country,
             songNumber: info.songNumber,

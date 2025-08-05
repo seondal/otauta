@@ -1,44 +1,34 @@
+import { Prisma } from "@prisma/client";
+
 export interface Series {
   id: string;
   title: string;
-  titleEn?: string;
   titleKr?: string;
-  description?: string;
-  imageUrl?: string;
   createdAt: Date;
   updatedAt: Date;
-  songs?: Song[];
+  songs?: SongT[];
   userFavorites: UserFavoriteSeries[];
   submissions: SeriesSubmission[];
 }
 
-export interface Song {
-  id: string;
-  title: string;
-  titleEn?: string;
-  titleKr?: string;
-  type: "OP" | "ED" | "INSERT";
-  season?: string;
-  artist?: string;
-  releaseDate?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-  seriesId: string;
-  series?: Series;
-  karaokeInfo: KaraokeInfo[];
-  userFavorites: UserFavoriteSong[];
-  submissions: SongSubmission[];
-}
+export type SongT = Prisma.SongGetPayload<{
+  include: {
+    karaokeInfo: true;
+    userFavorites: true;
+    submissions: true;
+    series: true;
+  };
+}>;
 
 export interface KaraokeInfo {
   id: string;
   provider: string;
   country: string;
-  songNumber?: string;
+  songNumber: string;
   createdAt: Date;
   updatedAt: Date;
   songId: string;
-  song: Song;
+  song: SongT;
 }
 
 export interface User {
@@ -62,7 +52,7 @@ export interface UserFavoriteSong {
   songId: string;
   createdAt: Date;
   user: User;
-  song: Song;
+  song: SongT;
 }
 
 export interface UserFavoriteSeries {
@@ -89,7 +79,7 @@ export interface SongSubmission {
   userId: string;
   user: User;
   songId?: string;
-  song?: Song;
+  song?: SongT;
 }
 
 export interface SeriesSubmission {

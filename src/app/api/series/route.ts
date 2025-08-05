@@ -3,29 +3,16 @@ import { prisma } from "@/lib/db";
 
 export async function GET() {
   try {
-    const series = await prisma.series.findMany({
+    const seriesList = await prisma.series.findMany({
+      orderBy: { createdAt: "desc" }, // 최신순
       include: {
-        songs: {
-          take: 3,
-          include: {
-            karaokeInfo: {
-              select: {
-                id: true,
-                provider: true,
-                country: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
+        songs: true, // 시리즈에 포함된 노래들 (필요 없다면 생략 가능)
       },
     });
 
-    return NextResponse.json(series);
+    return NextResponse.json(seriesList);
   } catch (error) {
-    console.error("Error fetching series:", error);
+    console.error("Failed to fetch series", error);
     return NextResponse.json(
       { error: "Failed to fetch series" },
       { status: 500 }

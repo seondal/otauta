@@ -1,17 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SearchForm from "@/components/SearchForm";
 import SongCard from "@/components/SongCard";
 import SeriesCard from "@/components/SeriesCard";
 import TabNavigation from "@/components/TabNavigation";
 import { Search } from "lucide-react";
-import { Song, Series } from "@/types";
+import { Series, SongT } from "@/types";
 
 export default function HomePage() {
-  const [songs, setSongs] = useState<Song[]>([]);
+  const [songs, setSongs] = useState<SongT[]>([]);
   const [series, setSeries] = useState<Series[]>([]);
-  const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
+  const [filteredSongs, setFilteredSongs] = useState<SongT[]>([]);
   const [filteredSeries, setFilteredSeries] = useState<Series[]>([]);
   const [songSearchTerm, setSongSearchTerm] = useState("");
   const [seriesSearchTerm, setSeriesSearchTerm] = useState("");
@@ -47,7 +46,7 @@ export default function HomePage() {
 
   // 노래 검색 필터링
   useEffect(() => {
-    if (!songSearchTerm.trim()) {
+    if (!songSearchTerm.replace(/\s/g, "")) {
       setFilteredSongs(songs);
       return;
     }
@@ -55,12 +54,17 @@ export default function HomePage() {
     const filtered = songs.filter((song) => {
       const searchTerm = songSearchTerm.toLowerCase();
       return (
-        song.title.toLowerCase().includes(searchTerm) ||
-        song.titleEn?.toLowerCase().includes(searchTerm) ||
-        song.titleKr?.toLowerCase().includes(searchTerm) ||
-        song.artist?.toLowerCase().includes(searchTerm) ||
-        song.series?.title.toLowerCase().includes(searchTerm) ||
-        song.series?.titleEn?.toLowerCase().includes(searchTerm)
+        song.title.toLowerCase().replace(/\s/g, "").includes(searchTerm) ||
+        song.titleKr?.toLowerCase().replace(/\s/g, "").includes(searchTerm) ||
+        song.artist?.toLowerCase().replace(/\s/g, "").includes(searchTerm) ||
+        song.series?.title
+          .toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchTerm) ||
+        song.series?.titleKr
+          ?.toLowerCase()
+          .replace(/\s/g, "")
+          .includes(searchTerm)
       );
     });
 
@@ -69,7 +73,7 @@ export default function HomePage() {
 
   // 시리즈 검색 필터링
   useEffect(() => {
-    if (!seriesSearchTerm.trim()) {
+    if (!seriesSearchTerm.replace(/\s/g, "")) {
       setFilteredSeries(series);
       return;
     }
@@ -77,10 +81,8 @@ export default function HomePage() {
     const filtered = series.filter((item) => {
       const searchTerm = seriesSearchTerm.toLowerCase();
       return (
-        item.title.toLowerCase().includes(searchTerm) ||
-        item.titleEn?.toLowerCase().includes(searchTerm) ||
-        item.titleKr?.toLowerCase().includes(searchTerm) ||
-        item.description?.toLowerCase().includes(searchTerm)
+        item.title.toLowerCase().replace(/\s/g, "").includes(searchTerm) ||
+        item.titleKr?.toLowerCase().replace(/\s/g, "").includes(searchTerm)
       );
     });
 
@@ -186,76 +188,6 @@ export default function HomePage() {
             },
           ]}
         />
-      </div>
-
-      {/* Features */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-12">
-        <div className="text-center">
-          <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            쉬운 검색
-          </h3>
-          <p className="text-gray-600">
-            애니메이션 제목이나 노래 제목으로 쉽게 검색하세요
-          </p>
-        </div>
-
-        <div className="text-center">
-          <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            노래방 정보
-          </h3>
-          <p className="text-gray-600">
-            일본과 한국의 노래방에서 부를 수 있는지 확인하세요
-          </p>
-        </div>
-
-        <div className="text-center">
-          <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">즐겨찾기</h3>
-          <p className="text-gray-600">
-            좋아하는 노래와 애니메이션을 즐겨찾기에 저장하세요
-          </p>
-        </div>
       </div>
     </div>
   );

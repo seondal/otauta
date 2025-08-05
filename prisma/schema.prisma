@@ -46,9 +46,9 @@ model Song {
   id          String   @id @default(cuid())
   title       String   // Original title
   titleKr     String?  // Korean title
-  type        SongType // OP, ED, Insert
+  type        SongType
   season      String?  // Season info
-  artist      String?
+  artist      String
   releaseDate DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -67,11 +67,12 @@ model Song {
   submissions SongSubmission[]
 }
 
+
 model KaraokeInfo {
   id        String   @id @default(cuid())
   provider  String   // DAM, JOYSOUND, TJ, KY
   country   String   // Japan, Korea
-  songNumber String? // Karaoke song number
+  songNumber String // Karaoke song number
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
