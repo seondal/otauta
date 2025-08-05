@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import SearchForm from "@/components/SearchForm";
 import SongCard from "@/components/SongCard";
 import SeriesCard from "@/components/SeriesCard";
 import TabNavigation from "@/components/TabNavigation";
 import { Search } from "lucide-react";
 import { Song, Series } from "@/types";
 
-export default function HomePage() {
-  const [songs, setSongs] = useState<Song[]>([]);
-  const [series, setSeries] = useState<Series[]>([]);
+export default function FavoritesPage() {
+  const [favoriteSongs, setFavoriteSongs] = useState<Song[]>([]);
+  const [favoriteSeries, setFavoriteSeries] = useState<Series[]>([]);
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [filteredSeries, setFilteredSeries] = useState<Series[]>([]);
   const [songSearchTerm, setSongSearchTerm] = useState("");
@@ -18,8 +17,8 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // 초기 데이터 로드
-    const fetchData = async () => {
+    // 실제로는 사용자 인증 후 해당 사용자의 즐겨찾기를 가져와야 합니다
+    const fetchFavorites = async () => {
       try {
         const [songsResponse, seriesResponse] = await Promise.all([
           fetch("/api/songs"),
@@ -30,29 +29,30 @@ export default function HomePage() {
           const songsData = await songsResponse.json();
           const seriesData = await seriesResponse.json();
 
-          setSongs(songsData);
-          setFilteredSongs(songsData);
-          setSeries(seriesData);
-          setFilteredSeries(seriesData);
+          // 임시로 최근 10개를 즐겨찾기로 표시
+          setFavoriteSongs(songsData.slice(0, 10));
+          setFilteredSongs(songsData.slice(0, 10));
+          setFavoriteSeries(seriesData.slice(0, 10));
+          setFilteredSeries(seriesData.slice(0, 10));
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching favorites:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchFavorites();
   }, []);
 
   // 노래 검색 필터링
   useEffect(() => {
     if (!songSearchTerm.trim()) {
-      setFilteredSongs(songs);
+      setFilteredSongs(favoriteSongs);
       return;
     }
 
-    const filtered = songs.filter((song) => {
+    const filtered = favoriteSongs.filter((song) => {
       const searchTerm = songSearchTerm.toLowerCase();
       return (
         song.title.toLowerCase().includes(searchTerm) ||
@@ -65,16 +65,16 @@ export default function HomePage() {
     });
 
     setFilteredSongs(filtered);
-  }, [songSearchTerm, songs]);
+  }, [songSearchTerm, favoriteSongs]);
 
   // 시리즈 검색 필터링
   useEffect(() => {
     if (!seriesSearchTerm.trim()) {
-      setFilteredSeries(series);
+      setFilteredSeries(favoriteSeries);
       return;
     }
 
-    const filtered = series.filter((item) => {
+    const filtered = favoriteSeries.filter((item) => {
       const searchTerm = seriesSearchTerm.toLowerCase();
       return (
         item.title.toLowerCase().includes(searchTerm) ||
@@ -85,7 +85,7 @@ export default function HomePage() {
     });
 
     setFilteredSeries(filtered);
-  }, [seriesSearchTerm, series]);
+  }, [seriesSearchTerm, favoriteSeries]);
 
   if (isLoading) {
     return (
@@ -100,14 +100,9 @@ export default function HomePage() {
 
   return (
     <div className="space-y-8">
-      {/* Hero Section */}
-      <div className="text-center py-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          내 장르 노래방곡 모아보기
-        </h1>
-        <p className="text-xl text-gray-600">
-          애니메이션, 드라마 CD의 OST와 노래방 정보를 쉽게 찾아보세요
-        </p>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">즐겨찾기</h1>
+        <p className="text-gray-600">좋아하는 노래와 시리즈를 관리하세요</p>
       </div>
 
       {/* Tabs */}
@@ -116,10 +111,13 @@ export default function HomePage() {
           tabs={[
             {
               id: "songs",
-              label: `노래 (${filteredSongs.length}개)`,
+              label: "좋아하는 노래",
               content: (
                 <div>
                   <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      좋아하는 노래 ({filteredSongs.length}개)
+                    </h2>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                       <input
@@ -142,7 +140,7 @@ export default function HomePage() {
                       <p className="text-gray-500">
                         {songSearchTerm
                           ? "검색 결과가 없습니다."
-                          : "노래가 없습니다."}
+                          : "아직 좋아하는 노래가 없습니다."}
                       </p>
                     </div>
                   )}
@@ -151,10 +149,13 @@ export default function HomePage() {
             },
             {
               id: "series",
-              label: `시리즈 (${filteredSeries.length}개)`,
+              label: "좋아하는 시리즈",
               content: (
                 <div>
                   <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      좋아하는 시리즈 ({filteredSeries.length}개)
+                    </h2>
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                       <input
@@ -167,7 +168,7 @@ export default function HomePage() {
                     </div>
                   </div>
                   {filteredSeries.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {filteredSeries.map((series) => (
                         <SeriesCard key={series.id} series={series} />
                       ))}
@@ -177,7 +178,7 @@ export default function HomePage() {
                       <p className="text-gray-500">
                         {seriesSearchTerm
                           ? "검색 결과가 없습니다."
-                          : "시리즈가 없습니다."}
+                          : "아직 좋아하는 시리즈가 없습니다."}
                       </p>
                     </div>
                   )}
@@ -186,76 +187,6 @@ export default function HomePage() {
             },
           ]}
         />
-      </div>
-
-      {/* Features */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-12">
-        <div className="text-center">
-          <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            쉬운 검색
-          </h3>
-          <p className="text-gray-600">
-            애니메이션 제목이나 노래 제목으로 쉽게 검색하세요
-          </p>
-        </div>
-
-        <div className="text-center">
-          <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 00-2-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            노래방 정보
-          </h3>
-          <p className="text-gray-600">
-            일본과 한국의 노래방에서 부를 수 있는지 확인하세요
-          </p>
-        </div>
-
-        <div className="text-center">
-          <div className="bg-purple-100 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-          </div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">즐겨찾기</h3>
-          <p className="text-gray-600">
-            좋아하는 노래와 애니메이션을 즐겨찾기에 저장하세요
-          </p>
-        </div>
       </div>
     </div>
   );

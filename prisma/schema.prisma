@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role          UserRole  @default(USER)
+  
+  // Favorites
+  favoriteSongs     UserFavoriteSong[]
+  favoriteSeries    UserFavoriteSeries[]
+  
+  // Submissions
+  songSubmissions   SongSubmission[]
+  seriesSubmissions SeriesSubmission[]
+}
+
+model Series {
+  id          String   @id @default(cuid())
+  title       String   // Original title
+  titleKr     String?  // Korean title
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  songs       Song[]
+  userFavorites UserFavoriteSeries[]
+  submissions  SeriesSubmission[]
+}
+
+model Song {
+  id          String   @id @default(cuid())
+  title       String   // Original title
+  titleKr     String?  // Korean title
+  type        SongType // OP, ED, Insert
+  season      String?  // Season info
+  artist      String?
+  releaseDate DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  seriesId    String
+  series      Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  
+  // Karaoke availability
+  karaokeInfo KaraokeInfo[]
+  
+  // User favorites
+  userFavorites UserFavoriteSong[]
+  
+  // Submissions
+  submissions SongSubmission[]
+}
+
+model KaraokeInfo {
+  id        String   @id @default(cuid())
+  provider  String   // DAM, JOYSOUND, TJ, KY
+  country   String   // Japan, Korea
+  songNumber String? // Karaoke song number
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relationships
+  songId    String
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+}
+
+model UserFavoriteSong {
+  id        String   @id @default(cuid())
+  userId    String
+  songId    String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song      Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, songId])
+}
+
+model UserFavoriteSeries {
+  id        String   @id @default(cuid())
+  userId    String
+  seriesId  String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  series    Series   @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, seriesId])
+}
+
+model SongSubmission {
+  id          String   @id @default(cuid())
+  title       String
+  titleKr     String?
+  type        SongType
+  season      String?
+  artist      String?
+  animeTitle  String
+  status      SubmissionStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Optional relation to existing song
+  songId      String?
+  song        Song?    @relation(fields: [songId], references: [id], onDelete: SetNull)
+}
+
+model SeriesSubmission {
+  id          String   @id @default(cuid())
+  title       String
+  titleKr     String
+  status      SubmissionStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  
+  // Relationships
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Optional relation to existing series
+  seriesId    String?
+  series      Series?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum SongType {
+  OP
+  ED
+  INSERT
+  CHARACTER
+  TRACK
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
