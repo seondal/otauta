@@ -113,11 +113,7 @@ export default async function SubmissionsPage() {
                       <h3 className="font-medium text-gray-900">
                         {submission.title}
                       </h3>
-                      {submission.description && (
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          {submission.description}
-                        </p>
-                      )}
+
                       <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                         <span>
                           제안자:{" "}

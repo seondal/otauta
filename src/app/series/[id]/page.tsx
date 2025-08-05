@@ -2,15 +2,14 @@ import { prisma } from "@/lib/db";
 import SongCard from "@/components/SongCard";
 import { notFound } from "next/navigation";
 
-interface SeriesPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default async function SeriesPage({ params }: SeriesPageProps) {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   const series = await prisma.series.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       songs: {
         include: {

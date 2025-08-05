@@ -5,12 +5,12 @@ import SongCard from "@/components/SongCard";
 import SeriesCard from "@/components/SeriesCard";
 import TabNavigation from "@/components/TabNavigation";
 import { Search } from "lucide-react";
-import { Song, Series } from "@/types";
+import { Series, SongT } from "@/types";
 
 export default function FavoritesPage() {
-  const [favoriteSongs, setFavoriteSongs] = useState<Song[]>([]);
+  const [favoriteSongs, setFavoriteSongs] = useState<SongT[]>([]);
   const [favoriteSeries, setFavoriteSeries] = useState<Series[]>([]);
-  const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
+  const [filteredSongs, setFilteredSongs] = useState<SongT[]>([]);
   const [filteredSeries, setFilteredSeries] = useState<Series[]>([]);
   const [songSearchTerm, setSongSearchTerm] = useState("");
   const [seriesSearchTerm, setSeriesSearchTerm] = useState("");
@@ -56,11 +56,9 @@ export default function FavoritesPage() {
       const searchTerm = songSearchTerm.toLowerCase();
       return (
         song.title.toLowerCase().includes(searchTerm) ||
-        song.titleEn?.toLowerCase().includes(searchTerm) ||
         song.titleKr?.toLowerCase().includes(searchTerm) ||
         song.artist?.toLowerCase().includes(searchTerm) ||
-        song.series?.title.toLowerCase().includes(searchTerm) ||
-        song.series?.titleEn?.toLowerCase().includes(searchTerm)
+        song.series?.title.toLowerCase().includes(searchTerm)
       );
     });
 
@@ -78,9 +76,7 @@ export default function FavoritesPage() {
       const searchTerm = seriesSearchTerm.toLowerCase();
       return (
         item.title.toLowerCase().includes(searchTerm) ||
-        item.titleEn?.toLowerCase().includes(searchTerm) ||
-        item.titleKr?.toLowerCase().includes(searchTerm) ||
-        item.description?.toLowerCase().includes(searchTerm)
+        item.titleKr?.toLowerCase().includes(searchTerm)
       );
     });
 
