@@ -5,16 +5,20 @@ import Link from "next/link";
 
 interface SongCardProps {
   song: SongT;
+  isSeriesPage?: boolean;
 }
 
-export default function SongCard({ song }: SongCardProps) {
+export default function SongCard({
+  song,
+  isSeriesPage = false,
+}: SongCardProps) {
   const handleLike = () => {
     // 좋아요 로직 구현
     console.log("Like song:", song.id);
   };
 
   const handleYouTubeSearch = () => {
-    const searchQuery = encodeURIComponent(song.title);
+    const searchQuery = encodeURIComponent(song.title + " " + song.artist);
     window.open(
       `https://www.youtube.com/results?search_query=${searchQuery}`,
       "_blank"
@@ -22,7 +26,9 @@ export default function SongCard({ song }: SongCardProps) {
   };
 
   const handleKaraokeSearch = (provider: string) => {
-    const searchQuery = encodeURIComponent(`${song.title} ${provider}`);
+    const searchQuery = encodeURIComponent(
+      `${provider} ${song.title} ${song.artist}`
+    );
     window.open(
       `https://www.youtube.com/results?search_query=${searchQuery}`,
       "_blank"
@@ -39,14 +45,19 @@ export default function SongCard({ song }: SongCardProps) {
           {song.title} {song.titleKr && `(${song.titleKr})`}
         </h3>
         <p className="text-sm text-gray-500 mb-2">{song.artist}</p>
-        {song.series && (
-          <Link
-            href={`/series/${song.series.id}`}
-            className="text-sm text-gray-600 hover:underline">
-            {song.series?.titleKr ?? song.series?.title} {song.season}{" "}
-            {song.type}
-          </Link>
-        )}
+        {song.series &&
+          (isSeriesPage ? (
+            <span>
+              {song.season} {song.type}
+            </span>
+          ) : (
+            <Link
+              href={`/series/${song.series.id}`}
+              className="text-sm text-gray-600 hover:underline">
+              {song.series.titleKr ? song.series.titleKr : song.series.title}{" "}
+              {song.season} {song.type}
+            </Link>
+          ))}
       </div>
 
       {/* 노래방 정보 */}

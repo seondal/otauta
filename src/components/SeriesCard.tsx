@@ -25,6 +25,9 @@ export default function SeriesCard({ series }: SeriesCardProps) {
             ? `${series.titleKr} (${series.title})`
             : series.title}
         </h3>
+        <p className="text-sm text-gray-500 mt-3">
+          {series.songs?.length || 0}개의 노래
+        </p>
       </div>
 
       {/* 최근 노래들 */}
@@ -34,17 +37,16 @@ export default function SeriesCard({ series }: SeriesCardProps) {
             {series.songs.slice(0, 3).map((song) => (
               <div
                 key={song.id}
-                className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">
+                className="flex items-center justify-between text-sm gap-2">
+                <span className="text-gray-600 truncate text-ellipsis overflow-hidden whitespace-nowrap max-w-[60%]">
                   {song.title} {song.season && `(${song.season} ${song.type})`}
                 </span>
-                <span className="text-gray-400">{song.artist}</span>
+                <span className="text-gray-400 truncate text-ellipsis overflow-hidden whitespace-nowrap max-w-[40%]">
+                  {song.artist}
+                </span>
               </div>
             ))}
           </div>
-          <p className="text-sm text-gray-500 mt-3">
-            ... 외 {series.songs?.length - 3 || 0}개의 노래
-          </p>
         </div>
       )}
     </Link>

@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/python/data/
+/python/html/
 
 # next.js
 /.next/

@@ -51,21 +51,22 @@ export default function HomePage() {
       return;
     }
 
+    const normalize = (str: string | null) =>
+      str?.toLowerCase().replace(/\s/g, "") ?? "";
+
     const filtered = songs.filter((song) => {
-      const searchTerm = songSearchTerm.toLowerCase();
-      return (
-        song.title.toLowerCase().replace(/\s/g, "").includes(searchTerm) ||
-        song.titleKr?.toLowerCase().replace(/\s/g, "").includes(searchTerm) ||
-        song.artist?.toLowerCase().replace(/\s/g, "").includes(searchTerm) ||
-        song.series?.title
-          .toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchTerm) ||
-        song.series?.titleKr
-          ?.toLowerCase()
-          .replace(/\s/g, "")
-          .includes(searchTerm)
-      );
+      const searchTerm = normalize(songSearchTerm);
+
+      const targets = [
+        song.title,
+        song.titleKr,
+        song.artist,
+        song.series?.title,
+        song.series?.titleKr,
+        song.season,
+      ];
+
+      return targets.some((field) => normalize(field).includes(searchTerm));
     });
 
     setFilteredSongs(filtered);

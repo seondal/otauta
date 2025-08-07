@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Music, Heart, Plus, User, LogIn } from "lucide-react";
+import { Music, Heart, Plus, User, LogIn, BubblesIcon } from "lucide-react";
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -11,6 +11,12 @@ export default function Navigation() {
     { href: "/", label: "홈", icon: Music },
     // { href: "/favorites", label: "즐겨찾기", icon: Heart },
     // { href: "/submit", label: "제안하기", icon: Plus },
+    {
+      href: "https://seondal.notion.site/213d88b98263808c935bc470bc86e6f4?pvs=105",
+      label: "문의 및 제보",
+      icon: BubblesIcon,
+      blank: true,
+    },
   ];
 
   return (
@@ -28,7 +34,7 @@ export default function Navigation() {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-
+              const TargetBlank = item.blank ?? false;
               return (
                 <Link
                   key={item.href}
@@ -37,7 +43,8 @@ export default function Navigation() {
                     isActive
                       ? "bg-purple-100 text-purple-700"
                       : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                  }`}>
+                  }`}
+                  target={TargetBlank ? "_blank" : "_self"}>
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </Link>

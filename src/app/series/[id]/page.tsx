@@ -25,13 +25,15 @@ export default async function Page({
   if (!series) {
     return notFound();
   }
-
+  console.log(series);
   return (
     <div className="space-y-8">
       {/* 시리즈 헤더 */}
       <div className="bg-white rounded-lg shadow-md p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          {series.titleKr} ({series.title})
+          {series.titleKr
+            ? `${series.titleKr} (${series.title})`
+            : series.title}
         </h1>
         <div className="flex items-center space-x-4 text-sm text-gray-500">
           <span>총 {series.songs.length}개의 노래</span>
@@ -46,7 +48,7 @@ export default async function Page({
         {series.songs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {series.songs.map((song) => (
-              <SongCard key={song.id} song={song} />
+              <SongCard key={song.id} song={song} isSeriesPage />
             ))}
           </div>
         ) : (
